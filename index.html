@@ -1,0 +1,87 @@
+<!doctype html>
+
+<html>
+
+	<head>
+
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+		<title>iPhone battery with &lt;canvas&gt;</title>
+
+		<!--
+
+			Heavily inspired by Bill Labus' tutorial:
+			http://vector.tutsplus.com/illustration/how-to-create-a-transparent-battery-icon/
+
+		-->
+
+		<style type="text/css">
+
+			html, body {
+				background: #000;
+				color: #fff;
+				font: 8pt Arial, Verdana, Helvetica, sans-serif;
+				margin: 0;
+				padding: 0;
+				text-align: center;
+			}
+
+			h1 {
+				font-size: 300%;
+				font-weight: normal;
+				margin: 1em 0;
+		 	}
+
+			p {
+				margin: 1em 0;
+			}
+
+			a:link, a:visited {
+				color: #a2d16b;
+			}
+
+			a:hover, a:active {
+				color: #039701;
+			}
+
+			#battery {
+				cursor: pointer;
+			}
+
+		</style>
+
+		<script src="battery.js" type="text/javascript"></script>
+		<script src="cufon-yui.js" type="text/javascript"></script>
+		<script src="Vegur.font.js" type="text/javascript"></script>
+
+		<script type="text/javascript">
+
+			window.onload = function() {
+				var canvas = document.getElementById('battery'),
+					battery = new Battery(canvas).animate(0.8, 750);
+				if (!canvas.addEventListener) return;
+				canvas.addEventListener('click', function(e) {
+					var pos = Math.min(1, Math.max(0, (e.pageX - canvas.offsetLeft - 138) / 304));
+					battery.animate(pos, 750);
+				}, false);
+			};
+
+			Cufon('h1');
+
+		</script>
+
+	</head>
+
+	<body>
+
+		<h1>iPhone <strong>battery</strong> with &lt;canvas&gt;. No images.</h1>
+
+		<canvas id="battery" width="600" height="330">
+			<p>Sorry.. it seems like your browser does not support &lt;canvas&gt;.</p>
+		</canvas>
+
+		<p>&copy; <a href="http://twitter.com/sorccu">Simo Kinnunen</a> 2009. Heading with <a href="http://cufon.shoqolate.com/generate/">Cufón</a>. Design stolen from <a href="http://vector.tutsplus.com/illustration/how-to-create-a-transparent-battery-icon/">Bill Labus' tutorial</a>.</p>
+
+	</body>
+
+</html>
