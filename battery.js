@@ -346,6 +346,40 @@ var Battery = function(canvas, options) {
 		g.restore();
 	}
 
+	function drawShine(g, alpha) {
+		var fill;
+		g.save();
+		fill = g.createRadialGradient(0, 0, 0, 0, 0, 10);
+		fill.addColorStop(0, 'rgba(255, 255, 255, ' + alpha + ')');
+		fill.addColorStop(1, 'rgba(255, 255, 255, 0)');
+		g.fillStyle = fill;
+		g.fillRect(-10, -10, 20, 20);
+		g.restore();
+	}
+
+	function drawShines(g) {
+		g.save();
+		g.translate(-20, 23);
+		g.scale(1.5, 2);
+		drawShine(g, 0.6);
+		g.restore();
+		g.save();
+		g.translate(-12, 5);
+		g.scale(1.8, 2.3);
+		drawShine(g, 0.3);
+		g.restore();
+		g.save();
+		g.translate(324, 22);
+		g.scale(1.4, 1.8);
+		drawShine(g, 0.4);
+		g.restore();
+		g.save();
+		g.translate(337.5, 55);
+		g.scale(1, 1.4);
+		drawShine(g, 0.4);
+		g.restore();
+	}
+
 	function drawBackground(g) {
 		var h;
 		if (!cachedBackground) {
@@ -364,17 +398,18 @@ var Battery = function(canvas, options) {
 		var h;
 		if (!cachedForeground) {
 			cachedForeground = document.createElement('canvas');
-			cachedForeground.width = 405;
-			cachedForeground.height = 195;
+			cachedForeground.width = 445;
+			cachedForeground.height = 235;
 			h = cachedForeground.getContext('2d');
-			h.translate(30, 10);
+			h.translate(50, 30);
 			h.save();
 			drawBodyForegroundHilites(h);
 			h.restore();
 			drawCaps(h);
 			drawCapEnds(h);
+			drawShines(h);
 		}
-		g.drawImage(cachedForeground, -30, -10);
+		g.drawImage(cachedForeground, -50, -30);
 	}
 
 	function feather(g, by, w, h, mx, my, fn) {
