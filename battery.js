@@ -132,7 +132,7 @@ var Battery = function(canvas, options) {
 	function drawCapEnd(g) {
 		var x, y;
 		g.save();
-		feather(g, 5, 12, 168, 0.2, 0, function() {
+		feather(g, 4, 12, 168, 0.2, 0, function() {
 			g.beginPath();
 			g.moveTo(x = 0, y = 0.5);
 			g.bezierCurveTo(x + 5, y + 6, x + 6, y + 78, x += 6, y += 84);
@@ -148,14 +148,15 @@ var Battery = function(canvas, options) {
 		g.save();
 		g.fillStyle = '#000';
 		g.globalAlpha = 0.3;
-		g.scale(-1.3, 1);
+		g.translate(-2, 18);
+		g.scale(-2, 0.80);
 		drawCapEnd(g);
 		g.restore();
 		g.save();
 		g.fillStyle = '#fff';
 		g.globalAlpha = 0.2;
-		g.translate(305, 18);
-		g.scale(1.5, 0.80);
+		g.translate(306, 18);
+		g.scale(1.6, 0.80);
 		drawCapEnd(g);
 		g.restore();
 	}
@@ -407,8 +408,8 @@ var Battery = function(canvas, options) {
 			h.save();
 			drawBodyForegroundHilites(h);
 			h.restore();
-			drawCaps(h);
 			drawCapEnds(h);
+			drawCaps(h);
 			drawShines(h);
 		}
 		g.drawImage(cachedForeground, -50, -30);
