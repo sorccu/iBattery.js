@@ -361,22 +361,24 @@ var Battery = function(canvas, options) {
 		g.save();
 		g.translate(-20, 23);
 		g.scale(1.5, 2);
-		drawShine(g, 0.6);
+		drawShine(g, 0.55);
 		g.restore();
 		g.save();
 		g.translate(-12, 5);
+		g.rotate(0.3);
 		g.scale(1.8, 2.3);
-		drawShine(g, 0.3);
+		drawShine(g, 0.25);
 		g.restore();
 		g.save();
 		g.translate(324, 22);
+		g.rotate(-0.3);
 		g.scale(1.4, 1.8);
-		drawShine(g, 0.4);
+		drawShine(g, 0.35);
 		g.restore();
 		g.save();
 		g.translate(337.5, 55);
 		g.scale(1, 1.4);
-		drawShine(g, 0.4);
+		drawShine(g, 0.35);
 		g.restore();
 	}
 
