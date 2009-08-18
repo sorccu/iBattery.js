@@ -51,15 +51,15 @@ var Battery = function(canvas, options) {
 		var x, y, i, l;
 		g.save();
 		g.fillStyle = '#fff';
-		g.translate(1, 0);
+		g.translate(1, 1);
 		// fake blur by creating multiple shapes with different opacities
 		// looks better than feather
 		for (i = 0, l = 6; i < l; ++i) {
 			g.globalAlpha = alpha * i / l;
 			g.beginPath();
-			g.moveTo(x = -1.5, y = 2.4);
+			g.moveTo(x = -0.5, y = 2);
 			g.lineTo(x -= 11, y += 1);
-			g.quadraticCurveTo(x - 4, y + 6, x -= 8, y += 24);
+			g.quadraticCurveTo(x - 7, y, x -= 8, y += 24);
 			g.bezierCurveTo(x + 2, y - 10, x + 6, y - 18, x += 17, y -= 18);
 			g.fill();
 			g.scale(0.95, 0.8);
