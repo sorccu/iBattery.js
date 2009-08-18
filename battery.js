@@ -1,6 +1,9 @@
 var Battery = function(canvas, options) {
 
 	if (!options) options = {};
+	options.glow = options.glow || 12;
+	options.blend = options.blend || false;
+	options.critical = options.critical || 0.2;
 
 	function drawCapBase(g) {
 		var x, y, fill;
@@ -299,7 +302,7 @@ var Battery = function(canvas, options) {
 		g.restore();
 		g.globalAlpha = 0.5;
 		drawUpperShellHilite(g);
-		g.globalAlpha = 0.3;
+		g.globalAlpha = 0.4;
 		drawLowerShellHilite(g);
 		g.restore();
 	}
@@ -307,34 +310,56 @@ var Battery = function(canvas, options) {
 	function drawLiquidCap(g, pos) {
 		var x, y;
 		g.save();
-		g.globalAlpha = 0.2;
-		g.fillStyle = '#fff';
 		g.beginPath();
-		g.moveTo(x = 0, y = 0.5);
-		g.bezierCurveTo(x + 5 - (8 * (1 - pos)), y + 10, x + 6 - (10 * (1 - pos)), y + 78, x += 6 - (10 * (1 - pos)), y += 84);
-		g.bezierCurveTo(x, y + 6, x - 1 + (1.6 * (1 - pos)), y + 78, x -= 6 - (10 * (1 - pos)), y += 83.5);
-		g.bezierCurveTo(x - 1, y - 6, x - 2, y - 78, x -= 2, y -= 83.5);
-		g.bezierCurveTo(x, y - 6, x + 1, y - 78, x += 2, y -= 83.5);
+		g.moveTo(x = 0, y = 2.5);
+		g.bezierCurveTo(x + 10 * (pos - 0.5), y + 6, x + 12 * (pos - 0.5), y + 76, x + 12 * (pos - 0.5), y += 82);
+		g.bezierCurveTo(x + 12 * (pos - 0.5), y + 6, x + 10 * (pos - 0.5), y + 76, x, y += 82);
+		g.bezierCurveTo(x - 4 * (pos - 0.5), y - 6, x - 6 * (pos - 0.5), y - 76, x - 6 * (pos - 0.5), y -= 82);
+		g.bezierCurveTo(x - 6 * (pos - 0.5), y - 6, x - 4 * (pos - 0.5), y - 76, x, y -= 82);
 		g.fill();
+		g.restore();
+	}
+
+	function drawLiquidGlow(g, pos) {
+		var x, y, fill, width = pos * 304,
+			split = pos > options.critical ? 1 : (options.blend ? pos / options.critical : 0),
+			offset = options.glow;
+		g.save();
+		g.translate(-offset, 0);
+		g.globalAlpha = 0.3;
+		feather(g, offset, width + offset * 2, 168 + offset, 1, 1, function() {
+			g.beginPath();
+			g.moveTo(x = 0, y = 0);
+			g.bezierCurveTo(x + 0.12 * offset, y - 0.5 * offset, x + 0.5 * offset, y - offset, x += offset + 6, y -= offset);
+			g.lineTo(x += width - 12, y);
+			x += 6;
+			g.bezierCurveTo(x + 0.5 * offset, y, x + 0.88 * offset, y + 0.5 * offset, x += offset, y += offset);
+			g.bezierCurveTo(x + 5, y + 6, x + 6, y + 76, x + 6, y += 82);
+			g.bezierCurveTo(x + 6, y + 6, x + 5, y + 76, x, y += 82 + 5);
+			g.lineTo(x -= width + offset * 2, y);
+			g.bezierCurveTo(x - 5, y - 6, x - 6, y - 76, x - 6, y -= 82 + 5);
+			g.bezierCurveTo(x - 6, y - 6, x - 5, y - 76, x, y -= 82);
+			g.fill();
+		});
 		g.restore();
 	}
 
 	function drawLiquid(g, pos) {
 		var x, y, fill, width = pos * 304,
-			split = pos > 0.3 ? 1 : (options.blend ? pos / 0.3 : 0);
+			split = pos > 0.2 ? 1 : (options.blend ? pos / 0.2 : 0);
 		g.save();
+		g.fillStyle = mix(0xff0000, 1, 0x19ff00, 1, split);
+		drawLiquidGlow(g, pos);
 		g.globalCompositeOperation = 'lighter';
 		g.beginPath();
 		g.moveTo(x = 0, y = 2.5);
 		g.lineTo(x += width, y);
-		g.bezierCurveTo(x + 5 - (8 * (1 - pos)), y + 6, x + 6 - (10 * (1 - pos)), y + 76, x += 6 - (10 * (1 - pos)), y += 82);
-		g.bezierCurveTo(x, y + 6, x - 1 + (1.6 * (1 - pos)), y + 76, x -= 6 - (10 * (1 - pos)), y += 82);
+		g.bezierCurveTo(x + 10 * (pos - 0.5), y + 6, x + 12 * (pos - 0.5), y + 76, x + 12 * (pos - 0.5), y += 82);
+		g.bezierCurveTo(x + 12 * (pos - 0.5), y + 6, x + 10 * (pos - 0.5), y + 76, x, y += 82);
 		g.lineTo(x -= width, y);
-		g.bezierCurveTo(x - 5, y - 6, x - 6, y - 76, x -= 6, y -= 82);
-		g.bezierCurveTo(x, y - 6, x + 1, y - 76, x += 6, y -= 82);
-		g.fillStyle = mix(0xff0000, 0.15, 0x19ff00, 0.15, split);
-		g.fill();
-		fill = g.createLinearGradient(x, y, x, y + 167.5);
+		g.bezierCurveTo(x - 5, y - 6, x - 6, y - 76, x - 6, y -= 82);
+		g.bezierCurveTo(x - 6, y - 6, x - 5, y - 76, x, y -= 82);
+		fill = g.createLinearGradient(x, y, x, y + 164);
 		fill.addColorStop(0, mix(0xfe5939, 0.9, 0x79bf3a, 0.9, split));
 		fill.addColorStop(0.5, mix(0xcd0000, 0.6, 0x009b01, 0.6, split));
 		fill.addColorStop(1, mix(0xf16f5c, 0.6, 0x71ca3c, 0.6, split));
@@ -343,6 +368,12 @@ var Battery = function(canvas, options) {
 		g.restore();
 		g.save();
 		g.translate(width, 0);
+		fill = g.createLinearGradient(x, y, x, y + 164);
+		fill.addColorStop(0, mix(0xfe5939, 0.6, 0x79bf3a, 0.2, split));
+		fill.addColorStop(0.5, mix(0xcd0000, 0.4, 0x009b01, 0.4, split));
+		fill.addColorStop(1, mix(0xf16f5c, 0.4, 0x71ca3c, 0.2, split));
+		g.fillStyle = fill;
+		g.globalCompositeOperation = 'lighter';
 		drawLiquidCap(g, pos);
 		g.restore();
 	}
@@ -415,8 +446,27 @@ var Battery = function(canvas, options) {
 		g.drawImage(cachedForeground, -50, -30);
 	}
 
+	function drawReflection(g) {
+		var bottom = 198, mask;
+		g.save();
+		g.translate(0, bottom);
+		g.scale(1, -1);
+		g.drawImage(canvas, 0, -canvas.height + (canvas.height - bottom) - 1);
+		g.scale(1, -1);
+		g.restore();
+		g.globalCompositeOperation = 'destination-in';
+		mask = g.createLinearGradient(0, 0, 0, canvas.height);
+		mask.addColorStop(0, 'rgba(255, 255, 255, 1)');
+		mask.addColorStop(bottom / canvas.height, 'rgba(255, 255, 255, 1)');
+		mask.addColorStop(bottom / canvas.height, 'rgba(255, 255, 255, 0.3)');
+		mask.addColorStop(1, 'rgba(255, 255, 255, 0)');
+		g.fillStyle = mask;
+		g.fillRect(0, 0, canvas.width, canvas.height);
+		g.restore();
+	}
+
 	function feather(g, by, w, h, mx, my, fn) {
-		var steps = by * 2, i, at,
+		var steps = by, i, at,
 			alphaStep = 1 - Math.pow(1 - g.globalAlpha, 1 / steps);
 		for (i = 0; i < steps; ++i) {
 			g.save();
@@ -471,31 +521,15 @@ var Battery = function(canvas, options) {
 
 	api.set = function(to) {
 		if (!supported) return api;
-		var g = canvas.getContext('2d'),
-			top = 30, height = 168, bottom = top + height,
-			mask;
+		var g = canvas.getContext('2d');
 		at = to;
 		g.save();
-		g.translate(138, top);
+		g.translate(138, 30);
 		drawBackground(g);
 		drawLiquid(g, 0.05 + to * 0.95);
 		drawForeground(g);
 		g.restore();
-		g.save();
-		g.translate(0, bottom);
-		g.scale(1, -1);
-		g.drawImage(canvas, 0, -canvas.height + (canvas.height - bottom) - 1);
-		g.scale(1, -1);
-		g.restore();
-		g.globalCompositeOperation = 'destination-in';
-		mask = g.createLinearGradient(0, 0, 0, canvas.height);
-		mask.addColorStop(0, 'rgba(255, 255, 255, 1)');
-		mask.addColorStop(bottom / canvas.height, 'rgba(255, 255, 255, 1)');
-		mask.addColorStop(bottom / canvas.height, 'rgba(255, 255, 255, 0.3)');
-		mask.addColorStop(1, 'rgba(255, 255, 255, 0)');
-		g.fillStyle = mask;
-		g.fillRect(0, 0, canvas.width, canvas.height);
-		g.restore();
+		drawReflection(g);
 		return api;
 	};
 
