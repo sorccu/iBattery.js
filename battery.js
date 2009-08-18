@@ -323,7 +323,8 @@ var Battery = function(canvas, options) {
 	function drawLiquidGlow(g, pos) {
 		var x, y, fill, width = pos * 304,
 			split = pos > options.critical ? 1 : (options.blend ? pos / options.critical : 0),
-			offset = options.glow;
+			offset = options.glow,
+			factor = Math.abs(pos - 0.5) * 2;
 		g.save();
 		g.translate(-offset, 0);
 		g.globalAlpha = 0.3;
@@ -334,8 +335,8 @@ var Battery = function(canvas, options) {
 			g.lineTo(x += width - 12, y);
 			x += 6;
 			g.bezierCurveTo(x + 0.5 * offset, y, x + 0.88 * offset, y + 0.5 * offset, x += offset, y += offset);
-			g.bezierCurveTo(x + 5, y + 6, x + 6, y + 76, x + 6, y += 82);
-			g.bezierCurveTo(x + 6, y + 6, x + 5, y + 76, x, y += 82 + 5);
+			g.bezierCurveTo(x + 5 * factor, y + 6, x + 6 * factor, y + 76, x + 6 * factor, y += 82);
+			g.bezierCurveTo(x + 6 * factor, y + 6, x + 5 * factor, y + 76, x, y += 82 + 5);
 			g.lineTo(x -= width + offset * 2, y);
 			g.bezierCurveTo(x - 5, y - 6, x - 6, y - 76, x - 6, y -= 82 + 5);
 			g.bezierCurveTo(x - 6, y - 6, x - 5, y - 76, x, y -= 82);
@@ -371,7 +372,7 @@ var Battery = function(canvas, options) {
 		fill = g.createLinearGradient(x, y, x, y + 164);
 		fill.addColorStop(0, mix(0xfe5939, 0.6, 0x79bf3a, 0.2, split));
 		fill.addColorStop(0.5, mix(0xcd0000, 0.4, 0x009b01, 0.4, split));
-		fill.addColorStop(1, mix(0xf16f5c, 0.4, 0x71ca3c, 0.2, split));
+		fill.addColorStop(1, mix(0xf16f5c, 0.6, 0x71ca3c, 0.7, split));
 		g.fillStyle = fill;
 		g.globalCompositeOperation = 'lighter';
 		drawLiquidCap(g, pos);
@@ -447,7 +448,7 @@ var Battery = function(canvas, options) {
 	}
 
 	function drawReflection(g) {
-		var bottom = 198, mask;
+		var bottom = 197.5, mask;
 		g.save();
 		g.translate(0, bottom);
 		g.scale(1, -1);
@@ -458,7 +459,8 @@ var Battery = function(canvas, options) {
 		mask = g.createLinearGradient(0, 0, 0, canvas.height);
 		mask.addColorStop(0, 'rgba(255, 255, 255, 1)');
 		mask.addColorStop(bottom / canvas.height, 'rgba(255, 255, 255, 1)');
-		mask.addColorStop(bottom / canvas.height, 'rgba(255, 255, 255, 0.3)');
+		mask.addColorStop(bottom / canvas.height, 'rgba(255, 255, 255, 0.5)');
+		mask.addColorStop(bottom / canvas.height * 1.04, 'rgba(255, 255, 255, 0.2)');
 		mask.addColorStop(1, 'rgba(255, 255, 255, 0)');
 		g.fillStyle = mask;
 		g.fillRect(0, 0, canvas.width, canvas.height);
