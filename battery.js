@@ -1,10 +1,5 @@
 var Battery = function(canvas, options) {
 
-	if (!options) options = {};
-	options.glow = options.glow || 12;
-	options.blend = options.blend || false;
-	options.critical = options.critical || 0.2;
-
 	function drawCapBase(g) {
 		var x, y, fill;
 		g.save();
@@ -494,15 +489,29 @@ var Battery = function(canvas, options) {
 			(a1 + (a2 - a1) * pos) + ')';
 	}
 
-	// transitions stolen from MooTools
-
-	function transition(p) {
-		return Math.pow(2, 8 * (p - 1));
-	}
-
-	function easedTransition(p) {
-		return (p <= 0.5) ? transition(2 * p) / 2 : (2 - transition(2 * (1 - p))) / 2;
-	}
+	options = (function() {
+		var k, defaultOptions = {
+			glow: 12,
+			blend: false,
+			critical: 0.2,
+			fps: 40,
+			// stolen from MooTools
+			transition: (function() {
+				function expo(p) {
+					return Math.pow(2, 8 * (p - 1));
+				}
+				return function(p) {
+					return p <= 0.5 ? expo(2 * p) / 2 : (2 - expo(2 * (1 - p))) / 2;
+				};
+			})()
+		};
+		if (options) for (k in options) {
+			if (options.hasOwnProperty(k)) {
+				defaultOptions[k] = options[k];
+			}
+		}
+		return defaultOptions;
+	})();
 
 	var at = 0, interval,
 		cachedBackground, cachedForeground,
@@ -510,14 +519,14 @@ var Battery = function(canvas, options) {
 
 	api.animate = function(to, time) {
 		if (!supported) return api;
-		var from = at, step = 0, steps = time / 1000 * 40;
+		var fps = options.fps, transition = options.transition,
+			from = at, step = 0, steps = time / 1000 * fps;
 		clearInterval(interval);
 		interval = setInterval(function() {
-			var pos = easedTransition(step / steps);
 			canvas.width = canvas.width;
-			api.set(from + (to - from) * pos);
+			api.set(from + (to - from) * transition(step / steps));
 			if (++step > steps) clearInterval(interval);
-		}, 25);
+		}, 1000 / fps);
 		return api;
 	};
 
