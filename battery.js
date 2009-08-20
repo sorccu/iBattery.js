@@ -3,9 +3,8 @@ var Battery = function(canvas, options) {
 	function drawCapBase(g) {
 		var x, y, fill;
 		g.save();
-		g.globalAlpha = 0.75;
 		g.beginPath();
-		g.moveTo(x = -0.5, y = 0); // intentionally cause blurry rendering
+		g.moveTo(x = -0.5, y = 0);
 		g.lineTo(x -= 10, y);
 		g.bezierCurveTo(x - 12, y, x - 12, y + 74, x -= 12, y += 84);
 		g.bezierCurveTo(x, y + 10, x, y + 84, x += 12, y += 84);
@@ -13,9 +12,9 @@ var Battery = function(canvas, options) {
 		g.bezierCurveTo(x - 5, y - 10, x - 6, y - 78, x -= 6, y -= 84);
 		g.bezierCurveTo(x, y - 10, x + 1, y - 74, x += 6, y -= 84);
 		fill = g.createLinearGradient(x, y, x, y + 168);
-		fill.addColorStop(0, 'rgba(66, 66, 66, 0.9)');
-		fill.addColorStop(0.15, 'rgba(255, 255, 255, 1)');
-		fill.addColorStop(1, 'rgba(0, 0, 0, 1)');
+		fill.addColorStop(0, 'rgba(66, 66, 66, 0.675)');
+		fill.addColorStop(0.15, 'rgba(255, 255, 255, 0.75)');
+		fill.addColorStop(1, 'rgba(0, 0, 0, 0.75)');
 		g.fillStyle = fill;
 		g.fill();
 		g.restore();
@@ -45,8 +44,8 @@ var Battery = function(canvas, options) {
 	function drawCapHilite(g, alpha) {
 		var x, y, i, l;
 		g.save();
-		g.fillStyle = '#fff';
 		g.translate(1, 1);
+		g.fillStyle = '#fff';
 		// fake blur by creating multiple shapes with different opacities
 		// looks better than feather
 		for (i = 0, l = 6; i < l; ++i) {
