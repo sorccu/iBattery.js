@@ -1,43 +1,47 @@
 var Battery = function(canvas, options) {
 
-	function drawCapBase(g) {
-		var x, y, fill;
+	function drawCapShape(g) {
+		var x, y, cp1x, cp2x, fill;
 		g.save();
 		g.beginPath();
-		g.moveTo(x = -0.5, y = 0);
+		g.moveTo(x = 0, y = 0);
 		g.lineTo(x -= 10, y);
-		g.bezierCurveTo(x - 12, y, x - 12, y + 74, x -= 12, y += 84);
-		g.bezierCurveTo(x, y + 10, x, y + 84, x += 12, y += 84);
+		cp1x = x - 12;
+		g.bezierCurveTo(cp1x, y, cp1x, y + 74, cp1x, y += 84);
+		g.bezierCurveTo(cp1x, y + 10, cp1x, y + 84, x, y += 84);
 		g.lineTo(x += 10, y);
-		g.bezierCurveTo(x - 5, y - 10, x - 6, y - 78, x -= 6, y -= 84);
-		g.bezierCurveTo(x, y - 10, x + 1, y - 74, x += 6, y -= 84);
-		fill = g.createLinearGradient(x, y, x, y + 168);
-		fill.addColorStop(0, 'rgba(66, 66, 66, 0.675)');
-		fill.addColorStop(0.15, 'rgba(255, 255, 255, 0.75)');
-		fill.addColorStop(1, 'rgba(0, 0, 0, 0.75)');
-		g.fillStyle = fill;
+		cp1x = x - 5;
+		cp2x = x - 6;
+		g.bezierCurveTo(cp1x, y - 10, cp2x, y - 78, cp2x, y -= 84);
+		g.bezierCurveTo(cp2x, y - 10, cp1x, y - 74, x, y -= 84);
 		g.fill();
 		g.restore();
 	}
 
-	function drawCapBody(g) {
-		var x, y, fill;
+	function drawCapBase(g) {
+		var x, y, cp1x, cp2x, fill;
 		g.save();
-		g.beginPath();
-		g.moveTo(x = 1, y = 0);
-		g.lineTo(x -= 10, y);
-		g.bezierCurveTo(x - 12, y, x - 12, y + 74, x -= 12, y += 84);
-		g.bezierCurveTo(x, y + 10, x, y + 84, x += 12, y += 84);
-		g.lineTo(x += 10, y);
-		g.bezierCurveTo(x - 5, y - 10, x - 6, y - 78, x -= 6, y -= 84);
-		g.bezierCurveTo(x, y - 10, x + 1, y - 74, x += 6, y -= 84);
-		fill = g.createLinearGradient(x, y, x, y + 168);
+		g.translate(-0.5, 0);
+		fill = g.createLinearGradient(0, 0, 0, 168);
+		fill.addColorStop(0, 'rgba(66, 66, 66, 0.675)');
+		fill.addColorStop(0.15, 'rgba(255, 255, 255, 0.75)');
+		fill.addColorStop(1, 'rgba(0, 0, 0, 0.75)');
+		g.fillStyle = fill;
+		drawCapShape(g);
+		g.restore();
+	}
+
+	function drawCapBody(g) {
+		var x, y, cp1x, cp2x, fill;
+		g.save();
+		g.translate(1, 0);
+		fill = g.createLinearGradient(0, 0, 0, 168);
 		fill.addColorStop(0, 'rgba(66, 66, 66, 0.8)');
 		fill.addColorStop(0.4, 'rgba(0, 0, 0, 1)');
 		fill.addColorStop(0.82, 'rgba(0, 0, 0, 1)');
 		fill.addColorStop(1, 'rgba(66, 66, 66, 0.8)');
 		g.fillStyle = fill;
-		g.fill();
+		drawCapShape(g);
 		g.restore();
 	}
 
@@ -127,15 +131,20 @@ var Battery = function(canvas, options) {
 	}
 
 	function drawCapEnd(g) {
-		var x, y;
 		g.save();
-		feather(g, 4, 12, 168, 0.2, 0, function() {
+		g.translate(0, 0.5);
+		feather(g, 3, 6, 168, 0, 1, function() {
+			var x, y, cp1x, cp2x;
 			g.beginPath();
-			g.moveTo(x = 0, y = 0.5);
-			g.bezierCurveTo(x + 5, y + 6, x + 6, y + 78, x += 6, y += 84);
-			g.bezierCurveTo(x, y + 6, x - 1, y + 78, x -= 6, y += 83.5);
-			g.bezierCurveTo(x - 1, y - 6, x - 2, y - 78, x -= 2, y -= 83.5);
-			g.bezierCurveTo(x, y - 6, x + 1, y - 78, x += 2, y -= 83.5);
+			g.moveTo(x = 0, y = 0);
+			cp1x = x + 5;
+			cp2x = x + 6;
+			g.bezierCurveTo(cp1x, y + 6, cp2x, y + 78, cp2x, y += 84);
+			g.bezierCurveTo(cp2x, y + 6, cp1x, y + 78, x, y += 84);
+			cp1x = x - 1;
+			cp2x = x - 2;
+			g.bezierCurveTo(cp1x, y - 6, cp2x, y - 78, cp2x, y -= 84);
+			g.bezierCurveTo(cp2x, y - 6, cp1x, y - 78, x, y -= 84);
 			g.fill();
 		});
 		g.restore();
@@ -174,16 +183,20 @@ var Battery = function(canvas, options) {
 	}
 
 	function drawBodyBase(g) {
-		var x, y, fill;
+		var x, y, cp1x, cp2x, fill;
 		g.save();
 		g.beginPath();
 		g.moveTo(x = 0, y = 0);
 		g.lineTo(x += 304, y);
-		g.bezierCurveTo(x + 5, y + 10, x + 6, y + 78, x += 6, y += 84);
-		g.bezierCurveTo(x, y + 6, x - 1, y + 78, x -= 6, y += 84);
+		cp1x = x + 5;
+		cp2x = x + 6;
+		g.bezierCurveTo(cp1x, y + 10, cp2x, y + 78, cp2x, y += 84);
+		g.bezierCurveTo(cp2x, y + 6, cp1x, y + 78, x, y += 84);
 		g.lineTo(x -= 304, y);
-		g.bezierCurveTo(x - 5, y - 6, x - 6, y - 78, x -= 6, y -= 84);
-		g.bezierCurveTo(x, y - 6, x + 1, y - 78, x += 6, y -= 84);
+		cp1x = x - 5;
+		cp2x = x - 6;
+		g.bezierCurveTo(cp1x, y - 6, cp2x, y - 78, cp2x, y -= 84);
+		g.bezierCurveTo(cp2x, y - 6, cp1x, y - 78, x, y -= 84);
 		fill = g.createLinearGradient(x, y, x, y + 168);
 		fill.addColorStop(0, 'rgba(0, 0, 0, 0)');
 		fill.addColorStop(0.2, 'rgba(0, 0, 0, 0)');
@@ -288,28 +301,38 @@ var Battery = function(canvas, options) {
 		g.save();
 		g.globalAlpha = 0.25;
 		drawBodyHilite(g);
+		g.restore();
 		g.save();
 		g.translate(0, 168);
 		g.scale(1, -0.6);
 		g.globalAlpha = 0.3;
 		drawBodyHilite(g);
 		g.restore();
+		g.save();
 		g.globalAlpha = 0.5;
 		drawUpperShellHilite(g);
+		g.restore();
+		g.save();
 		g.globalAlpha = 0.4;
 		drawLowerShellHilite(g);
 		g.restore();
 	}
 
 	function drawLiquidCap(g, pos) {
-		var x, y;
+		var x, y, cp1x, cp2x;
+		pos -= 0.5;
 		g.save();
+		g.translate(0, 2.5);
 		g.beginPath();
-		g.moveTo(x = 0, y = 2.5);
-		g.bezierCurveTo(x + 10 * (pos - 0.5), y + 6, x + 12 * (pos - 0.5), y + 76, x + 12 * (pos - 0.5), y += 82);
-		g.bezierCurveTo(x + 12 * (pos - 0.5), y + 6, x + 10 * (pos - 0.5), y + 76, x, y += 82);
-		g.bezierCurveTo(x - 4 * (pos - 0.5), y - 6, x - 6 * (pos - 0.5), y - 76, x - 6 * (pos - 0.5), y -= 82);
-		g.bezierCurveTo(x - 6 * (pos - 0.5), y - 6, x - 4 * (pos - 0.5), y - 76, x, y -= 82);
+		g.moveTo(x = 0, y = 0);
+		cp1x = x + 10 * pos;
+		cp2x = x + 12 * pos;
+		g.bezierCurveTo(cp1x, y + 6, cp2x, y + 76, cp2x, y += 82);
+		g.bezierCurveTo(cp2x, y + 6, cp1x, y + 76, x, y += 82);
+		cp1x = x - 4 * pos;
+		cp2x = x - 6 * pos;
+		g.bezierCurveTo(cp1x, y - 6, cp2x, y - 76, cp2x, y -= 82);
+		g.bezierCurveTo(cp2x, y - 6, cp1x, y - 76, x, y -= 82);
 		g.fill();
 		g.restore();
 	}
@@ -340,7 +363,9 @@ var Battery = function(canvas, options) {
 	}
 
 	function drawLiquid(g, pos) {
-		var x, y, fill, width = pos * 304,
+		var x, y, cp1x, cp2x,
+			fill,
+			width = pos * 304,
 			split = pos > 0.2 ? 1 : (options.blend ? pos / 0.2 : 0);
 		g.save();
 		g.fillStyle = mix(0xff0000, 1, 0x19ff00, 1, split);
@@ -349,11 +374,15 @@ var Battery = function(canvas, options) {
 		g.beginPath();
 		g.moveTo(x = 0, y = 2.5);
 		g.lineTo(x += width, y);
-		g.bezierCurveTo(x + 10 * (pos - 0.5), y + 6, x + 12 * (pos - 0.5), y + 76, x + 12 * (pos - 0.5), y += 82);
-		g.bezierCurveTo(x + 12 * (pos - 0.5), y + 6, x + 10 * (pos - 0.5), y + 76, x, y += 82);
+		cp1x = x + 10 * (pos - 0.5);
+		cp2x = x + 12 * (pos - 0.5);
+		g.bezierCurveTo(cp1x, y + 6, cp2x, y + 76, cp2x, y += 82);
+		g.bezierCurveTo(cp2x, y + 6, cp1x, y + 76, x, y += 82);
 		g.lineTo(x -= width, y);
-		g.bezierCurveTo(x - 5, y - 6, x - 6, y - 76, x - 6, y -= 82);
-		g.bezierCurveTo(x - 6, y - 6, x - 5, y - 76, x, y -= 82);
+		cp1x = x - 5;
+		cp2x = x - 6;
+		g.bezierCurveTo(cp1x, y - 6, cp2x, y - 76, cp2x, y -= 82);
+		g.bezierCurveTo(cp2x, y - 6, cp1x, y - 76, x, y -= 82);
 		fill = g.createLinearGradient(x, y, x, y + 164);
 		fill.addColorStop(0, mix(0xfe5939, 0.9, 0x79bf3a, 0.9, split));
 		fill.addColorStop(0.5, mix(0xcd0000, 0.6, 0x009b01, 0.6, split));
@@ -431,9 +460,7 @@ var Battery = function(canvas, options) {
 			cachedForeground.height = 235;
 			h = cachedForeground.getContext('2d');
 			h.translate(50, 30);
-			h.save();
 			drawBodyForegroundHilites(h);
-			h.restore();
 			drawCapEnds(h);
 			drawCaps(h);
 			drawShines(h);
@@ -485,7 +512,7 @@ var Battery = function(canvas, options) {
 			~~(r1 + (r2 - r1) * pos) + ',' +
 			~~(g1 + (g2 - g1) * pos) + ',' +
 			~~(b1 + (b2 - b1) * pos) + ',' +
-			(a1 + (a2 - a1) * pos) + ')';
+			  (a1 + (a2 - a1) * pos) + ')';
 	}
 
 	options = (function() {
