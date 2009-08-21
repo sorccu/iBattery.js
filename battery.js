@@ -1,5 +1,35 @@
 var Battery = function(canvas, options) {
 
+	function Feather(by, w, h, alpha, scaleX, scaleY) {
+
+		if (alpha > 0.95) alpha = 0.95;
+		if (isNaN(scaleX)) scaleX = 1;
+		if (isNaN(scaleY)) scaleY = 1;
+
+		var layerAlpha = 1 - Math.pow(1 - alpha, 1 / by);
+
+		// Firefox 3.0 fails with globalAlpha and gradient/pattern
+		// fills, which is why this helper is needed.
+		this.rgba = function(r, g, b, a) {
+			return 'rgba(' +
+				r + ',' +
+				g + ',' +
+				b + ',' +
+				(a * layerAlpha) + ')';
+		};
+
+		this.draw = function(g, fn) {
+			for (var i = 0; i < by; ++i) {
+				g.save();
+				g.translate(scaleX * i, scaleY * i);
+				g.scale((w - (i * 2)) / w, (h - (i * 2)) / h);
+				fn(g);
+				g.restore();
+			}
+		};
+
+	}
+
 	function drawCapShape(g) {
 		var x, y, cp1x, cp2x, fill;
 		g.save();
@@ -76,15 +106,14 @@ var Battery = function(canvas, options) {
 	}
 
 	function drawUpperCapReflection(g) {
-		var fill;
+		var fill, feather = new Feather(1, 15, 52, 0.9, -1, 1);
 		g.save();
-		g.translate(-4, 18);
-		g.globalAlpha = 0.9;
+		g.translate(-4, 18.5);
 		fill = g.createLinearGradient(0, 0, 0, 52);
-		fill.addColorStop(0, 'rgba(255, 255, 255, 1)');
-		fill.addColorStop(1, 'rgba(255, 255, 255, 0.2)');
+		fill.addColorStop(0, feather.rgba(255, 255, 255, 1));
+		fill.addColorStop(1, feather.rgba(255, 255, 255, 0.2));
 		g.fillStyle = fill;
-		feather(g, 1, 15, 52, 1, 1, function() {
+		feather.draw(g, function() {
 			var x, y;
 			g.beginPath();
 			g.moveTo(x = 0, y = 0);
@@ -102,10 +131,9 @@ var Battery = function(canvas, options) {
 		var x, y, fill;
 		g.save();
 		g.translate(-2, 158.5);
-		g.globalAlpha = 0.5;
 		fill = g.createLinearGradient(0, 0, 0, -30);
-		fill.addColorStop(0, '#fff');
-		fill.addColorStop(1, '#000');
+		fill.addColorStop(0, 'rgba(255, 255, 255, 0.5)');
+		fill.addColorStop(1, 'rgba(0, 0, 0, 0.5)');
 		g.fillStyle = fill;
 		g.beginPath();
 		g.moveTo(x = 0, y = 0);
@@ -130,10 +158,12 @@ var Battery = function(canvas, options) {
 		drawCapReflections(g);
 	}
 
-	function drawCapEnd(g) {
+	function drawCapEnd(g, color) {
+		var feather = new Feather(3, 6, 168, color[3], 0, 1);
 		g.save();
 		g.translate(0, 0.5);
-		feather(g, 3, 6, 168, 0, 1, function() {
+		g.fillStyle = feather.rgba.apply(feather, color);
+		feather.draw(g, function() {
 			var x, y, cp1x, cp2x;
 			g.beginPath();
 			g.moveTo(x = 0, y = 0);
@@ -152,18 +182,14 @@ var Battery = function(canvas, options) {
 
 	function drawCapEnds(g) {
 		g.save();
-		g.fillStyle = '#000';
-		g.globalAlpha = 0.3;
 		g.translate(-2, 18);
 		g.scale(-2, 0.80);
-		drawCapEnd(g);
+		drawCapEnd(g, [ 0, 0, 0, 0.4 ]);
 		g.restore();
 		g.save();
-		g.fillStyle = '#fff';
-		g.globalAlpha = 0.2;
 		g.translate(306, 18);
 		g.scale(1.6, 0.80);
-		drawCapEnd(g);
+		drawCapEnd(g, [ 255, 255, 255, 0.35 ]);
 		g.restore();
 	}
 
@@ -206,14 +232,14 @@ var Battery = function(canvas, options) {
 		g.restore();
 	}
 
-	function drawBodyHilite(g) {
-		var fill;
+	function drawBodyHilite(g, alpha) {
+		var fill, feather = new Feather(2, 306, 12, alpha);
 		g.save();
 		fill = g.createLinearGradient(0, 0, 0, 9);
-		fill.addColorStop(0, 'rgba(255, 255, 255, 1)');
-		fill.addColorStop(1, 'rgba(255, 255, 255, 0.3)');
+		fill.addColorStop(0, feather.rgba(255, 255, 255, 1));
+		fill.addColorStop(1, feather.rgba(255, 255, 255, 0.3));
 		g.fillStyle = fill;
-		feather(g, 2, 306, 12, 1, 1, function() {
+		feather.draw(g, function() {
 			var x, y;
 			g.beginPath();
 			g.moveTo(x = 0, y = 0);
@@ -227,14 +253,14 @@ var Battery = function(canvas, options) {
 	}
 
 	function drawUpperShellHilite(g) {
-		var fill;
+		var fill, feather = new Feather(2, 312, 48, 0.5);
 		g.save();
 		g.translate(-3, 18.5);
 		fill = g.createLinearGradient(0, 0, 0, 54);
-		fill.addColorStop(0, 'rgba(255, 255, 255, 1)');
-		fill.addColorStop(1, 'rgba(255, 255, 255, 0.2)');
+		fill.addColorStop(0, feather.rgba(255, 255, 255, 1));
+		fill.addColorStop(1, feather.rgba(255, 255, 255, 0.2));
 		g.fillStyle = fill;
-		feather(g, 2, 312, 48, 1, 1, function() {
+		feather.draw(g, function() {
 			var x, y;
 			g.beginPath();
 			g.moveTo(x = 0, y = 0);
@@ -248,14 +274,14 @@ var Battery = function(canvas, options) {
 	}
 
 	function drawLowerShellHilite(g) {
-		var fill;
+		var fill, feather = new Feather(2, 312, 22, 0.4);
 		g.save();
 		g.translate(-2, 137);
 		fill = g.createLinearGradient(0, 0, 0, 22);
-		fill.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
-		fill.addColorStop(1, 'rgba(255, 255, 255, 1)');
+		fill.addColorStop(0, feather.rgba(255, 255, 255, 0.2));
+		fill.addColorStop(1, feather.rgba(255, 255, 255, 1));
 		g.fillStyle = fill;
-		feather(g, 2, 312, 22, 1, 1, function() {
+		feather.draw(g, function() {
 			var x, y;
 			g.beginPath();
 			g.moveTo(x = 0, y = 0);
@@ -269,15 +295,14 @@ var Battery = function(canvas, options) {
 	}
 
 	function drawInnerShellHilite(g) {
-		var fill;
+		var fill, feather = new Feather(2, 304, 60, 0.2);
 		g.save();
 		g.translate(10, 97);
-		g.globalAlpha = 0.2;
 		fill = g.createLinearGradient(0, 0, 0, 60);
-		fill.addColorStop(0, 'rgba(255, 255, 255, 0.1)');
-		fill.addColorStop(1, 'rgba(255, 255, 255, 1)');
+		fill.addColorStop(0, feather.rgba(255, 255, 255, 0.1));
+		fill.addColorStop(1, feather.rgba(255, 255, 255, 1));
 		g.fillStyle = fill;
-		feather(g, 2, 304, 60, 1, 1, function() {
+		feather.draw(g, function() {
 			var x, y;
 			g.beginPath();
 			g.moveTo(x = 0, y = 0);
@@ -291,29 +316,18 @@ var Battery = function(canvas, options) {
 	}
 
 	function drawBodyBackgroundHilites(g) {
-		g.save();
-		g.globalAlpha = 0.5;
 		drawInnerShellHilite(g);
-		g.restore();
 	}
 
 	function drawBodyForegroundHilites(g) {
 		g.save();
-		g.globalAlpha = 0.25;
-		drawBodyHilite(g);
-		g.restore();
-		g.save();
+		drawBodyHilite(g, 0.25);
 		g.translate(0, 168);
 		g.scale(1, -0.6);
-		g.globalAlpha = 0.3;
-		drawBodyHilite(g);
+		drawBodyHilite(g, 0.3);
 		g.restore();
 		g.save();
-		g.globalAlpha = 0.5;
 		drawUpperShellHilite(g);
-		g.restore();
-		g.save();
-		g.globalAlpha = 0.4;
 		drawLowerShellHilite(g);
 		g.restore();
 	}
@@ -337,15 +351,16 @@ var Battery = function(canvas, options) {
 		g.restore();
 	}
 
-	function drawLiquidGlow(g, pos) {
+	function drawLiquidGlow(g, pos, color) {
 		var x, y, fill, width = pos * 304,
 			split = pos > options.critical ? 1 : (options.blend ? pos / options.critical : 0),
 			offset = options.glow,
-			factor = Math.abs(pos - 0.5) * 2;
+			factor = Math.abs(pos - 0.5) * 2,
+			feather = new Feather(offset, width + offset * 2, 168 + offset, 0.3);
 		g.save();
 		g.translate(-offset, 0);
-		g.globalAlpha = 0.3;
-		feather(g, offset, width + offset * 2, 168 + offset, 1, 1, function() {
+		g.fillStyle = feather.rgba.apply(feather, color);
+		feather.draw(g, function() {
 			g.beginPath();
 			g.moveTo(x = 0, y = 0);
 			g.bezierCurveTo(x + 0.12 * offset, y - 0.5 * offset, x + 0.5 * offset, y - offset, x += offset + 6, y -= offset);
@@ -368,8 +383,7 @@ var Battery = function(canvas, options) {
 			width = pos * 304,
 			split = pos > 0.2 ? 1 : (options.blend ? pos / 0.2 : 0);
 		g.save();
-		g.fillStyle = mix(0xff0000, 1, 0x19ff00, 1, split);
-		drawLiquidGlow(g, pos);
+		drawLiquidGlow(g, pos, mix(0xff0000, 1, 0x19ff00, 1, split, true));
 		g.globalCompositeOperation = 'lighter';
 		g.beginPath();
 		g.moveTo(x = 0, y = 2.5);
@@ -393,9 +407,9 @@ var Battery = function(canvas, options) {
 		g.save();
 		g.translate(width, 0);
 		fill = g.createLinearGradient(x, y, x, y + 164);
-		fill.addColorStop(0, mix(0xfe5939, 0.6, 0x79bf3a, 0.2, split));
-		fill.addColorStop(0.5, mix(0xcd0000, 0.4, 0x009b01, 0.4, split));
-		fill.addColorStop(1, mix(0xf16f5c, 0.6, 0x71ca3c, 0.7, split));
+		fill.addColorStop(0, mix(0xfe5939, 0.6, 0x79bf3a, 0, split));
+		fill.addColorStop(0.5, mix(0xcd0000, 0.4, 0x009b01, 0.3, split));
+		fill.addColorStop(1, mix(0xf16f5c, 0.6, 0x71ca3c, 0, split));
 		g.fillStyle = fill;
 		g.globalCompositeOperation = 'lighter';
 		drawLiquidCap(g, pos);
@@ -487,31 +501,20 @@ var Battery = function(canvas, options) {
 		g.restore();
 	}
 
-	function feather(g, by, w, h, mx, my, fn) {
-		var steps = by, i, at,
-			alphaStep = 1 - Math.pow(1 - g.globalAlpha, 1 / steps);
-		for (i = 0; i < steps; ++i) {
-			g.save();
-			g.translate(mx * (at = i / steps * by), my * at);
-			g.scale((w - (at *= 2)) / w, (h - at) / h);
-			g.globalAlpha = alphaStep;
-			fn(g);
-			g.restore();
-		}
-	}
-
-	function mix(color1, a1, color2, a2, pos) {
+	function mix(color1, a1, color2, a2, pos, asArray) {
 		var r1 = color1 >> 16,
 			g1 = color1 >> 8 & 0xff,
 			b1 = color1 & 0xff,
 			r2 = color2 >> 16,
 			g2 = color2 >> 8 & 0xff,
-			b2 = color2 & 0xff;
-		return 'rgba(' +
-			~~(r1 + (r2 - r1) * pos) + ',' +
-			~~(g1 + (g2 - g1) * pos) + ',' +
-			~~(b1 + (b2 - b1) * pos) + ',' +
-			  (a1 + (a2 - a1) * pos) + ')';
+			b2 = color2 & 0xff,
+			r = ~~(r1 + (r2 - r1) * pos),
+			g = ~~(g1 + (g2 - g1) * pos),
+			b = ~~(b1 + (b2 - b1) * pos),
+			a = (a1 + (a2 - a1) * pos);
+		return asArray
+			? [ r, g, b, a ]
+			: 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')'
 	}
 
 	options = (function() {
