@@ -469,22 +469,21 @@ var Battery = function(canvas, options) {
 	}
 
 	function drawReflection(g) {
-		var bottom = 197.5, mask;
+		var x = 100, y = 0,
+			w = 400, h = 198,
+			mask;
 		g.save();
-		g.translate(0, bottom);
 		g.scale(1, -1);
-		g.drawImage(canvas, 0, -canvas.height + (canvas.height - bottom) - 1);
-		g.scale(1, -1);
-		g.restore();
-		g.globalCompositeOperation = 'destination-in';
-		mask = g.createLinearGradient(0, 0, 0, canvas.height);
-		mask.addColorStop(0, 'rgba(255, 255, 255, 1)');
-		mask.addColorStop(bottom / canvas.height, 'rgba(255, 255, 255, 1)');
-		mask.addColorStop(bottom / canvas.height, 'rgba(255, 255, 255, 0.5)');
-		mask.addColorStop(bottom / canvas.height * 1.04, 'rgba(255, 255, 255, 0.2)');
+		g.translate(0, -h);
+		g.drawImage(canvas, x, y, w, h, x, -h, w, h);
+		mask = g.createLinearGradient(0, 0, 0, h - canvas.height);
+		mask.addColorStop(0, 'rgba(255, 255, 255, 1)')
+		mask.addColorStop(0.001, 'rgba(255, 255, 255, 0.5)');
+		mask.addColorStop(0.05,'rgba(255, 255, 255, 0.2)');
 		mask.addColorStop(1, 'rgba(255, 255, 255, 0)');
 		g.fillStyle = mask;
-		g.fillRect(0, 0, canvas.width, canvas.height);
+		g.globalCompositeOperation = 'destination-in';
+		g.fillRect(x, h, w, -canvas.height);
 		g.restore();
 	}
 
