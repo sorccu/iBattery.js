@@ -483,21 +483,23 @@ var Battery = function(canvas, options) {
 	}
 
 	function drawReflection(g) {
-		var x = 100, y = 0,
-			w = 400, h = 198,
-			mask;
+		var h = 198, split = h / canvas.height, mask;
 		g.save();
 		g.scale(1, -1);
-		g.translate(0, -h);
-		g.drawImage(canvas, x, y, w, h, x, -h, w, h);
-		mask = g.createLinearGradient(0, 0, 0, h - canvas.height);
-		mask.addColorStop(0, 'rgba(255, 255, 255, 1)')
-		mask.addColorStop(0.001, 'rgba(255, 255, 255, 0.5)');
-		mask.addColorStop(0.05,'rgba(255, 255, 255, 0.2)');
+		// it would be faster to use the 9-argument drawImage(),
+		// but unfortunately Safari 3 does not play well with it.
+		g.drawImage(canvas, 0, -h * 2);
+		g.restore();
+		g.save();
+		mask = g.createLinearGradient(0, 0, 0, canvas.height);
+		mask.addColorStop(0, 'rgba(255, 255, 255, 1)');
+		mask.addColorStop(split, 'rgba(255, 255, 255, 1)');
+		mask.addColorStop(split, 'rgba(255, 255, 255, 0.5)');
+		mask.addColorStop(split * 1.05,'rgba(255, 255, 255, 0.2)');
 		mask.addColorStop(1, 'rgba(255, 255, 255, 0)');
 		g.fillStyle = mask;
 		g.globalCompositeOperation = 'destination-in';
-		g.fillRect(x, h, w, -canvas.height);
+		g.fillRect(0, 0, canvas.width, canvas.height);
 		g.restore();
 	}
 
