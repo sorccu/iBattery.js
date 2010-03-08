@@ -567,8 +567,8 @@ var Battery = function(canvas, options) {
 		g.save();
 		g.translate(138, 30);
 		drawBackground(g);
-		drawLiquid(g, 0.05 + to * 0.95);
 		drawForeground(g);
+		drawLiquid(g, 0.05 + to * 0.95);
 		g.restore();
 		drawReflection(g);
 		return api;
